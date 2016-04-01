@@ -1,0 +1,85 @@
+# Point Delineation Documentaiton
+
+-Tools referenced are ArcMap 10.2.
+##Layer Prep
+
+
+1. The processing area is established, encompasing the full extent of the potential 
+contributing drainage area to the points being processed. This can be based on  
+a HUC boundary layer, selected catchments, or some other processing area 
+designation layer. Whatever the method, it is important to maintain network 
+connectivity within the desired watershed (i.e. don't divide watersheds)
+
+2. Buffer (*Analysis Tools > Proximity > Buffer*) the processing extent to 
+ensure all features are included. 1 or 2 km is a reasonable buffer length. 
+
+3. Select the features from each of the Drainage Line and Catchment layers 
+that intersect the buffer layer and export as new layers.
+
+4. Use the Extract by Mask tool (Spatial Analyst Tools > Extraction > Extract 
+by Mask) to clip the flow direction and accumulation grids to the buffer layer.
+
+5. The Drainage Line layer is rasterized to create the flow grid (strFinal).
+
+
+
+##Location Editing
+
+The Reclassify tool is used to create a stream grid for snapping based on the flow accumulation layer. 
+In this case, cells with 50 or more contributing cells defined the snapping grid. 
+
+The location points will be snapped to the snap stream grid (strSnap50) (image:snap_example). The stream grid (strFinal) is displayed over the snap stream grid. The high resolution flowline vector layer is also used in this manual inspection process. Points are visually checked against these layers. Manual adjustment of locations is performed to ensure that the points will snap to sensible locations on the stream grid. (image: conluence) shows an example of a correction to ensure the point is located on the correct branch of the flow grid with respect to it's location on the vector layer. Differences between the stream and snap grids also require adjustment of points to ensure they fall on the correct channel (image: grid_difference). In some cases locations are on such small, undocumented streams that snapping should be turned off for that particular point (image: no_snap). These points are noted and will be identified in a later step.
+
+Watershed Delineation
+
+
+Adjoint Catchment Processing
+Input
+Drainage Line: DrainageLineFinal
+Catchment: Catchment
+Output
+Adjoint Catchment: AdjointCatchment
+
+Batch Point Setup
+
+Five columns are added to the 
+SnapOn (short integer): 1 (0 for ones referred to above)
+Batch Done (short integer): (0)
+SrcType (short integer): (0)
+Name (string): XYCroCode
+Descript(string): StrmName
+
+Batch Watershed Delineation
+Input
+Batch Point: crossings_delineation
+Flow Direction Grid: fdr
+Stream Grid: strFinal
+Snap Stream Grid: strSnap50
+Catchment: Catchment
+Adjoint Catchment: AdjointCatchment
+Output
+Watershed: Watershed
+Watershed Point: WatershedPoint
+
+
+Longest Flow Path
+Input
+Drainage Area: Watersheds
+Flow Direction Grid: fdr
+Output
+Longest Flow Path: LongestFlowPath
+
+Flow Path Parameters from 2D Line
+Input
+Longest Flow Path:
+Raw DEM:
+Output
+Slope 1085 Point: 
+
+Post Processing
+
+Run attributes script
+
+Run zonal stats script
+
+Run R script
