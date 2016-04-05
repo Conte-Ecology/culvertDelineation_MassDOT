@@ -1,0 +1,6 @@
+Name,Type,Value,Description
+SnapOn,Short integer,1,"Identifies whether or not the site gets snapped to the steram grid. 0 = don't snap, 1 = snap"
+BatchDone,Short integer,0,"Identified whether or not the point has been processed by the Batch Waterhsed Delineation tool. 0 = unprocessed, 1 = processed"
+SrcType,Short integer,0,"Defines the point type. 0 = outlet, 1 = inlet"
+Name,String,XYCroCode,The unique ID assigned to the watershed
+Descript,String,StrmName,The description of the site

@@ -7,20 +7,7 @@ output:
   keep_md: yes
 ---
 
-```{r notes and read data, echo = FALSE, warning = FALSE}
-library(pander)
 
-#Project page URL: 
-#   http://conte-ecology.github.io/shedsData
-#Project name: 
-#   SHEDS Data
-#Tagline: 
-#   A project generating the environmental data supporting the Spatial Hydro-Ecological Decision System (SHEDS).
-
-
-input_layers <- read.csv("C:/KPONEIL/GitHub/projects/culvertDelineation_MassDOT/documentation/input_layers.csv")
-batch_points <- read.csv("C:/KPONEIL/GitHub/projects/culvertDelineation_MassDOT/documentation/batch_points.csv")
-```
 
 
 # Point Delineation Documentaiton
@@ -29,12 +16,15 @@ batch_points <- read.csv("C:/KPONEIL/GitHub/projects/culvertDelineation_MassDOT/
 
 ## Source Layers
 
-```{r input layers, results='asis', echo = FALSE}
-pandoc.table(input_layers,
-             justify = 'lll',
-             style = 'rmarkdown',
-             split.tables = Inf)
-```
+
+| Description            | Filename            | Directory                                          |
+|:-----------------------|:--------------------|:---------------------------------------------------|
+| Catchment Layer        | Catchment01         | HRD\V2\gisFiles\NHDH01\arcHydro\vectors.gdb\Layers |
+| Flow direction grid    | Fdr01               | HRD\V2\gisFiles\NHDH01\arcHydro\Layers             |
+| Flow accumulation grid | Fac01               | HRD\V2\gisFiles\NHDH01\arcHydro\Layers             |
+| Stream grid (final)    | strFinal01          | HRD\V2\gisFiles\NHDH01\arcHydro\Layers             |
+| Drainage line (final)  | DrainageLineFinal01 | HRD\V2\gisFiles\NHDH01\arcHydro\vectors.gdb\Layers |
+| High res flowlines     | detailedFlowlines01 | HRD\V2\products\hydrography.gdb                    |
 
 
 ## Layer Prep
@@ -110,12 +100,14 @@ The watershed delineation process takes advantage of the ArcHydro tools. Layers 
 
   Five columns are added to the point location layer. These columns are necessary for batch delineation and are described in the table below.
 
-```{r batch points, results='asis', echo = FALSE}
-pandoc.table(batch_points,
-             justify = 'llll',
-             style = 'rmarkdown',
-             split.tables = Inf)
-```
+
+| Name      | Type          | Value     | Description                                                                                                                    |
+|:----------|:--------------|:----------|:-------------------------------------------------------------------------------------------------------------------------------|
+| SnapOn    | Short integer | 1         | Identifies whether or not the site gets snapped to the steram grid. 0 = don't snap, 1 = snap                                   |
+| BatchDone | Short integer | 0         | Identified whether or not the point has been processed by the Batch Waterhsed Delineation tool. 0 = unprocessed, 1 = processed |
+| SrcType   | Short integer | 0         | Defines the point type. 0 = outlet, 1 = inlet                                                                                  |
+| Name      | String        | XYCroCode | The unique ID assigned to the watershed                                                                                        |
+| Descript  | String        | StrmName  | The description of the site                                                                                                    |
 
 **Batch Watershed Delineation**
 

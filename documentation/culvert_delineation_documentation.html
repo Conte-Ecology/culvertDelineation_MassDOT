@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>Point Delineation Documentaiton</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>Point Delineation Documentaiton</h1>
+
+<p>-Tools referenced are ArcMap 10.2.</p>
+
+<h2>Source Layers</h2>
+
+<table><thead>
+<tr>
+<th align="left">Description</th>
+<th align="left">Filename</th>
+<th align="left">Directory</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">Catchment Layer</td>
+<td align="left">Catchment01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\vectors.gdb\Layers</td>
+</tr>
+<tr>
+<td align="left">Flow direction grid</td>
+<td align="left">Fdr01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\Layers</td>
+</tr>
+<tr>
+<td align="left">Flow accumulation grid</td>
+<td align="left">Fac01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\Layers</td>
+</tr>
+<tr>
+<td align="left">Stream grid (final)</td>
+<td align="left">strFinal01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\Layers</td>
+</tr>
+<tr>
+<td align="left">Drainage line (final)</td>
+<td align="left">DrainageLineFinal01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\vectors.gdb\Layers</td>
+</tr>
+<tr>
+<td align="left">High res flowlines</td>
+<td align="left">detailedFlowlines01</td>
+<td align="left">HRD\V2\products\hydrography.gdb</td>
+</tr>
+</tbody></table>
+
+<h2>Layer Prep</h2>
+
+<ol>
+<li><p>The processing zone shapefile is created, encompasing the full extent of the potential 
+contributing drainage area to the points being processed. This can be based on<br/>
+a HUC boundary layer, selected catchments, or some other processing area 
+designation layer. Whatever the method, it is important to maintain network 
+connectivity within the desired watershed. Splitting a watershed by excluding 
+contributing drainage area will result in incorrect delineation.</p></li>
+<li><p>The processing zone shapefile is buffered (<em>Analysis Tools &gt; Proximity &gt; Buffer</em>)
+to ensure all features are included. 1 or 2 km is a reasonable buffer length. </p></li>
+<li><p>Features from each of the Drainage Line and Catchment layers that intersect 
+the buffer layer are selected and export as new layers.</p></li>
+<li><p>The final stream grid as well as the flow direction and accumulation grids are clipped to the buffer layer 
+using the Extract by Mask tool (<em>Spatial Analyst Tools &gt; Extraction &gt; Extract by Mask</em>).</p></li>
+<li><p>The Drainage Line layer is rasterized (<em>Conversion Tools &gt; To Raster &gt; Feature To Raster</em>) 
+to create the flow grid (strFinal). The </p></li>
+<li><p>A stream grid for snapping points is created using the Reclassify tool (<em>Spatial Analyst Tools &gt; Reclass &gt; Reclassify</em>).
+In this case, cells in the the flow accumulation layer with 50 or more contributing cells define the snapping grid. All other cells are treated as &ldquo;NoData&rdquo;</p></li>
+</ol>
+
+<h2>Location Editing</h2>
+
+<p>The delineation process requires location points to be snapped to the snap stream grid (<code>strSnap50</code>) (Figure 1). Before this snapping is completed, the points must be  manually inspected to ensure that the points will snap to sensible locations on the stream grid. For visual inspection, the stream grid (<code>strFinal</code>) is displayed over the snap stream grid. The high resolution flowline vector layer is also used in this manual inspection process. </p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6216239/14295484/d84dbcf6-fb43-11e5-9909-d578fddea8db.png" alt="Figure 1"/>
+Figure 1: Example of snapping a point to the snap stream grid
+<br><br></p>
+
+<p>As a general rule, relative positioning of the point on the vector layer should be reflected in it&#39;s position on the stream grid after snapping. Figure 2 shows an example of a correction to ensure the point is located on the correct branch of the flow grid with respect to it&#39;s location on the vector layer. </p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6216239/14295485/d850c892-fb43-11e5-942f-757504d4fe0b.png" alt="Figure 2"/>
+Figure 2: Adjustment of a point to the correct position on the stream grid
+<br><br></p>
+
+<p>Differences between the stream and snap grids also require adjustment of points to ensure they fall on the correct channel. Figure 3 shows how a point may fall onto a seemingly accurate position on the snap stream grid, but actually needs to be corrected to fall into the main channel of the stream. </p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6216239/14295486/d852824a-fb43-11e5-8c52-5ea70749c804.png" alt="Figure 3"/>
+Figure 3: Location adjustment to ensure point falls on the main stream channel
+<br><br></p>
+
+<p>In some cases locations are on such small, undocumented streams that snapping should be turned off for that particular point (Figure 4). These points are noted and will be identified in the &ldquo;SnapOn&rdquo; column of the Batch Point Setup step of the next section.</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6216239/14295483/d84c727e-fb43-11e5-9d05-b4aedbf056b1.png" alt="Figure 4"/>
+Figure 4: Example of a point located on an undocumented stream, resulting in snapping being turned off
+<br><br></p>
+
+<h2>Watershed Delineation</h2>
+
+<p>The watershed delineation process takes advantage of the ArcHydro tools. Layers are conformed to the specifications of these tools.</p>
+
+<ol>
+<li><p>Adjoint Catchment Processing</p>
+
+<p><em>Input</em> </p>
+
+<p>Drainage Line: DrainageLineFinal </p>
+
+<p>Catchment: Catchment </p>
+
+<p><em>Output</em> </p>
+
+<p>Adjoint Catchment: AdjointCatchment </p></li>
+<li><p>Batch Point Setup</p>
+
+<p>Five columns are added to the point location layer. These columns are necessary for batch delineation and are described in the table below.</p></li>
+</ol>
+
+<table><thead>
+<tr>
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left">Value</th>
+<th align="left">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">SnapOn</td>
+<td align="left">Short integer</td>
+<td align="left">1</td>
+<td align="left">Identifies whether or not the site gets snapped to the steram grid. 0 = don&#39;t snap, 1 = snap</td>
+</tr>
+<tr>
+<td align="left">BatchDone</td>
+<td align="left">Short integer</td>
+<td align="left">0</td>
+<td align="left">Identified whether or not the point has been processed by the Batch Waterhsed Delineation tool. 0 = unprocessed, 1 = processed</td>
+</tr>
+<tr>
+<td align="left">SrcType</td>
+<td align="left">Short integer</td>
+<td align="left">0</td>
+<td align="left">Defines the point type. 0 = outlet, 1 = inlet</td>
+</tr>
+<tr>
+<td align="left">Name</td>
+<td align="left">String</td>
+<td align="left">XYCroCode</td>
+<td align="left">The unique ID assigned to the watershed</td>
+</tr>
+<tr>
+<td align="left">Descript</td>
+<td align="left">String</td>
+<td align="left">StrmName</td>
+<td align="left">The description of the site</td>
+</tr>
+</tbody></table>
+
+<p><strong>Batch Watershed Delineation</strong></p>
+
+<p><em>Input</em>
+Batch Point: crossings_delineation
+Flow Direction Grid: fdr
+Stream Grid: strFinal
+Snap Stream Grid: strSnap50
+Catchment: Catchment
+Adjoint Catchment: AdjointCatchment
+<em>Output</em>
+Watershed: Watershed
+Watershed Point: WatershedPoint</p>
+
+<p><strong>Longest Flow Path</strong>
+<em>Input</em>
+Drainage Area: Watersheds
+Flow Direction Grid: fdr
+<em>Output</em>
+Longest Flow Path: LongestFlowPath</p>
+
+<p><strong>Flow Path Parameters from 2D Line</strong>
+<em>Input</em>
+Longest Flow Path:
+Raw DEM:
+<em>Output</em>
+Slope 1085 Point: </p>
+
+<p>Post Processing</p>
+
+<p>Run attributes script</p>
+
+<p>Run zonal stats script</p>
+
+<p>Run R script</p>
+
+</body>
+
+</html>
+
