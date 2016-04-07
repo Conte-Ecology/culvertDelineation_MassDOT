@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Deerfield Culvert Delineation - MassDOT : Point delineation based on the NHDHRDV2 hydrography layers">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Deerfield Culvert Delineation - MassDOT</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Conte-Ecology/culvertDelineation_MassDOT">View on GitHub</a>
+
+          <h1 id="project_title">Deerfield Culvert Delineation - MassDOT</h1>
+          <h2 id="project_tagline">Point delineation based on the NHDHRDV2 hydrography layers</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Conte-Ecology/culvertDelineation_MassDOT/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Conte-Ecology/culvertDelineation_MassDOT/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h2>
+<a id="point-delineation-documentaiton" class="anchor" href="#point-delineation-documentaiton" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Point Delineation Documentaiton</h2>
+
+<p>This project serves as an example workflow to delineating point locations on a 
+stream network using the 
+<a href="http://conte-ecology.github.io/shedsGisData/">NHDHRDV2 hydrography layers</a>. 
+Culvert and flow gage locations in the Deerfield watershed in MA &amp; VT are 
+delineated as part of the MassDOT Culvert Project (Figure 1). Additionally, 
+watershed attributes are caluclated for each of the given locations. Any tools 
+referenced are assumed for ArcMap 10.2. The documentaiton is broken into the 
+following sections: <br>
+<strong>1. Source Layers</strong> <br>
+<strong>2. Layer Pre-processing</strong> <br>
+<strong>3. Location Editing</strong> <br>
+<strong>4. Watershed Delineation</strong> <br>
+<strong>5. Additional Analysis</strong> <br>
+<strong>6. Catchment Attributes</strong> <br></p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6216239/14360676/82a1be6e-fcc5-11e5-8a41-b16be0630d9b.png" alt="Figure 1"></p>
+
+<p>Figure 1: Deerfield watershed with culvert and gage locations
+<br><br></p>
+
+<h2>
+<a id="source-layers" class="anchor" href="#source-layers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Source Layers</h2>
+
+<p>The intermediate hydrography processing layers from the NHDHRDV2 dataset are 
+required for the delineation process. Not all of these layers are made public, 
+but are available upon request. In addition to the source layers listed in the 
+table below, a spatial points layer representing the locations to be delineated 
+is required. If the points are not already mapped to the stream grid, this is 
+done in the <strong>Location Editing</strong> section. </p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Description</th>
+<th align="left">Filename</th>
+<th align="left">Directory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Catchment Layer</td>
+<td align="left">Catchment01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\vectors.gdb\Layers</td>
+</tr>
+<tr>
+<td align="left">Flow direction grid</td>
+<td align="left">Fdr01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\Layers</td>
+</tr>
+<tr>
+<td align="left">Flow accumulation grid</td>
+<td align="left">Fac01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\Layers</td>
+</tr>
+<tr>
+<td align="left">Stream grid (final)</td>
+<td align="left">strFinal01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\Layers</td>
+</tr>
+<tr>
+<td align="left">Drainage line (final)</td>
+<td align="left">DrainageLineFinal01</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydro\vectors.gdb\Layers</td>
+</tr>
+<tr>
+<td align="left">High res flowlines</td>
+<td align="left">detailedFlowlines01</td>
+<td align="left">HRD\V2\products\hydrography.gdb</td>
+</tr>
+<tr>
+<td align="left">Points layer</td>
+<td align="left">crossings_delineation</td>
+<td align="left">User-specified</td>
+</tr>
+<tr>
+<td align="left">Digital Elevation Model (optional)</td>
+<td align="left">dem</td>
+<td align="left">HRD\V2\gisFiles\NHDH01\arcHydroInput.gdb</td>
+</tr>
+</tbody>
+</table>
+
+<p>Table 1: Required source layers from NHDHRDV2 dataset</p>
+
+<h2>
+<a id="layer-pre-processing" class="anchor" href="#layer-pre-processing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Layer Pre-processing</h2>
+
+<p><strong>1. Define Processing Zone</strong> <br>
+The processing zone shapefile is created, encompasing the full extent of the 
+potential contributing drainage area to the points being processed. This can be 
+based on  a HUC boundary layer, selected catchments, or some other processing 
+area designation layer. Whatever the method, it is important to maintain network 
+connectivity within the desired watershed. Splitting a watershed by excluding 
+contributing drainage area will result in incorrect delineation.</p>
+
+<p><strong>2. Buffer Processing Zone</strong> <br>
+The processing zone shapefile is buffered (<em>Analysis Tools &gt; Proximity &gt; Buffer</em>)
+to ensure all features in the necessary processing range are captured. 1 - 2 km 
+is a reasonable buffer length. This step is not necessary if the original shapefile 
+certain to contain all required catchments and flowlines.</p>
+
+<p><strong>3. Generate Vector Layers</strong> <br>
+Features from each of the Drainage Line and Catchment layers that intersect 
+the buffer layer are selected and exported as new layers.</p>
+
+<p><strong>4. Generate Raster Layers</strong> <br>
+The stream grid, dem, flow direction grid and flow accumulation grid 
+are clipped to the buffer layer using the Extract by Mask tool 
+(<em>Spatial Analyst Tools &gt; Extraction &gt; Extract by Mask</em>).</p>
+
+<p><strong>5. Create Snap Stream Grid</strong> <br>
+A stream grid used for snapping points (<code>strSnap50</code>) is created using the 
+Reclassify tool (<em>Spatial Analyst Tools &gt; Reclass &gt; Reclassify</em>). In this 
+case, cells in the flow accumulation layer with 50 or more contributing cells 
+are reclassfied as a value of 1 to define the snapping grid. All other cells 
+are reclassified as "NoData".</p>
+
+<h2>
+<a id="location-editing" class="anchor" href="#location-editing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Location Editing</h2>
+
+<p>The delineation process requires location points to be snapped to the 
+<code>strSnap50</code> layer (Figure 2). Before this snapping is completed, the 
+points must be  manually inspected to ensure that they will snap to sensible 
+locations on the stream grid. For visual inspection, the stream grid 
+(<code>strFinal</code>) is displayed over the <code>strSnap50</code> layer. The high resolution 
+flowline vector layer (<code>strHR</code>) is also displayed for reference in the manual 
+inspection process. </p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6216239/14295484/d84dbcf6-fb43-11e5-9909-d578fddea8db.png" alt="Figure 2"></p>
+
+<p>Figure 2: Example of snapping a point to the snap stream grid
+<br><br></p>
+
+<p>As a general rule, relative positioning of the point on the <code>strHR</code> vector layer 
+should be reflected in its position on the stream grid after snapping. Figure 3 
+shows an example of a correction to ensure the point is located on the correct 
+branch of the stream grid with respect to it's location on the vector layer. </p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6216239/14295485/d850c892-fb43-11e5-942f-757504d4fe0b.png" alt="Figure 3"></p>
+
+<p>Figure 3: Adjustment of a point to the correct position on the stream grid
+<br><br></p>
+
+<p>Differences between the stream and snap grids also require adjustment of points 
+to ensure they fall on the correct channel. Figure 4 shows how a point may fall 
+onto a seemingly accurate position on the snap stream grid (<code>strSnap50</code>), but 
+actually needs to be corrected to fall into the main channel of the stream 
+represented by <code>strFinal</code>. </p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6216239/14295486/d852824a-fb43-11e5-8c52-5ea70749c804.png" alt="Figure 4"></p>
+
+<p>Figure 4: Location adjustment to ensure point falls on the main stream channel
+<br><br></p>
+
+<p>In some cases locations are on such small, undocumented streams that snapping 
+should be turned off for that particular point (Figure 5). These points are 
+noted and will be identified in the "SnapOn" column of the <strong>Batch Point Setup</strong> 
+step of the next section.</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6216239/14295483/d84c727e-fb43-11e5-9d05-b4aedbf056b1.png" alt="Figure 5"></p>
+
+<p>Figure 5: Example of a point, located on an undocumented stream, that does not<br>
+get snapped to the stream grid
+<br><br></p>
+
+<h2>
+<a id="watershed-delineation" class="anchor" href="#watershed-delineation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Watershed Delineation</h2>
+
+<p>The watershed delineation process takes advantage of the ArcHydro tools. Layers 
+are conformed to the specifications of these tools. It is necessary to follow 
+the steps in order to generate the watersheds polygon layer.</p>
+
+<p><strong>1. Adjoint Catchment Processing</strong></p>
+
+<p><strong><em>Input</em></strong> <br>
+Drainage Line: DrainageLineFinal <br> 
+Catchment: Catchment <br></p>
+
+<p><strong><em>Output</em></strong> <br>
+Adjoint Catchment: AdjointCatchment <br>
+<br><br></p>
+
+<p><strong>2. Batch Point Setup</strong></p>
+
+<p>Five columns are added to the point location layer using the "Add Field" tool 
+(<em>Data Management Tools &gt; Fields &gt; Add Field</em>). These columns are necessary 
+for batch delineation and are described in the table below.</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left">Value</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">SnapOn</td>
+<td align="left">Short integer</td>
+<td align="left">1</td>
+<td align="left">Identifies whether or not the site gets snapped to the steram grid. 0 = don't snap, 1 = snap</td>
+</tr>
+<tr>
+<td align="left">BatchDone</td>
+<td align="left">Short integer</td>
+<td align="left">0</td>
+<td align="left">Identified whether or not the point has been processed by the Batch Waterhsed Delineation tool. 0 = unprocessed, 1 = processed</td>
+</tr>
+<tr>
+<td align="left">SrcType</td>
+<td align="left">Short integer</td>
+<td align="left">0</td>
+<td align="left">Defines the point type. 0 = outlet, 1 = inlet</td>
+</tr>
+<tr>
+<td align="left">Name</td>
+<td align="left">String</td>
+<td align="left">XYCroCode</td>
+<td align="left">The unique ID assigned to the watershed</td>
+</tr>
+<tr>
+<td align="left">Descript</td>
+<td align="left">String</td>
+<td align="left">StrmName</td>
+<td align="left">The description of the site</td>
+</tr>
+</tbody>
+</table>
+
+<p>Table 2: Fields added to the point location layer to establish the "Batch Point" 
+layer for delineation
+<br><br></p>
+
+<p><strong>3. Batch Watershed Delineation</strong></p>
+
+<p><strong><em>Input</em></strong> <br>
+Batch Point: crossings_delineation <br>
+Flow Direction Grid: fdr <br>
+Stream Grid: strFinal <br>
+Snap Stream Grid: strSnap50 <br>
+Catchment: Catchment <br>
+Adjoint Catchment: AdjointCatchment</p>
+
+<p><strong><em>Output</em></strong> <br>
+Watershed: Watershed <br>
+Watershed Point: WatershedPoint
+<br><br></p>
+
+<h2>
+<a id="additional-analysis" class="anchor" href="#additional-analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Additional Analysis</h2>
+
+<p>This section describes the additional steps required to caluclate attributes 
+specific to the MassDOT Culvert Project. These steps are not neccessary for 
+creating watershed polygons.</p>
+
+<p><strong>1. Longest Flow Path</strong></p>
+
+<p><strong><em>Input</em></strong> <br>
+Drainage Area: Watersheds <br>
+Flow Direction Grid: fdr</p>
+
+<p><strong><em>Output</em></strong> <br>
+Longest Flow Path: LongestFlowPath
+<br><br></p>
+
+<p><strong>2. Flow Path Parameters from 2D Line</strong></p>
+
+<p><strong><em>Input</em></strong> <br>
+Longest Flow Path: LongestFlowPath <br>
+Raw DEM: dem <br></p>
+
+<p><strong><em>Output</em></strong> <br>
+Slope 1085 Point: Slp1085Point
+<br><br></p>
+
+<h2>
+<a id="catchment-attributes" class="anchor" href="#catchment-attributes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Catchment Attributes</h2>
+
+<p>The steps in this section calculate the attributes for the watershed polygons. 
+A small set of value rasters is used but can be added to if new attributes are 
+desired.</p>
+
+<p><strong>1. Spatial Layer Processing</strong></p>
+
+<p>Once the spatial layers have been generated a post-processing script is run to 
+add unique ID fields, calculate area/length, and export tables for use in later 
+steps. The inputs are defined in the <code>spatialPostProcessing.py</code> script and it 
+is executed in Arc Python.</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">arcHydroGeodatabase</td>
+<td align="left">The path to the ArcHydro output geodatabase containing the hydrography layers (Watershed, WatershedPoint, and LongestFlowPath)</td>
+<td align="left">"C:/culverts/NHDHRDV2.gdb"</td>
+</tr>
+<tr>
+<td align="left">uniqueID</td>
+<td align="left">The name of the unique ID field used to populate the "Name" column in the Batch Point Setup step</td>
+<td align="left">"XYCroCode"</td>
+</tr>
+<tr>
+<td align="left">zonalStatsDirectory</td>
+<td align="left">The path to the parent directory where the attributes tables will be written</td>
+<td align="left">"C:/culverts/zonalStatistics"</td>
+</tr>
+</tbody>
+</table>
+
+<p>Table 3: User-inputs to the spatialPostProcessing.py script
+<br><br></p>
+
+<p><strong>2. Calculate Zonal Statistics</strong>
+After the spatial layers are updated, the inputs to the 
+<code>zonalStatisticsProcessing.py</code> script are defined and the script is executed in 
+Arc Python.</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">zonalStatsDirectory</td>
+<td align="left">The  path to the parent directory where the attributes tables will be written</td>
+<td align="left">"C:/culverts/zonalStatistics"</td>
+</tr>
+<tr>
+<td align="left">catchmentsFilePath</td>
+<td align="left">The name of the unique ID field used to populate the "Name" column in the Batch Point Setup step</td>
+<td align="left">"C:/culverts/NHDHRDV2.gdb/Watershed"</td>
+</tr>
+<tr>
+<td align="left">zoneField</td>
+<td align="left">The field identifying the watershed polygons over which stats are calculated, typically the same as the uniqueID variable in the "spatialPostProcessing.py" script</td>
+<td align="left">"XYCroCode"</td>
+</tr>
+<tr>
+<td align="left">rasterDirectory</td>
+<td align="left">The directory path to where the value rasters are located</td>
+<td align="left">"C:/culverts/spatial/rasters"</td>
+</tr>
+<tr>
+<td align="left">rasterList</td>
+<td align="left">The list of rasters to process</td>
+<td align="left">["slope_pcnt", "ann_prcp_mm", "surfcoarse", "elevation", "lccti.tif"]</td>
+</tr>
+<tr>
+<td align="left">statList</td>
+<td align="left">The list of stats to process for each raster, positions must match the "rasterList"</td>
+<td align="left">["STD", "MEAN", "MEAN", "MEAN", "MIN_MAX_MEAN"]</td>
+</tr>
+</tbody>
+</table>
+
+<p>Table 4: User-inputs to the zonalStatisticsProcessing.py script
+<br><br></p>
+
+<p><strong>3. Finalize Attributes</strong>
+The R script, <code>finalizeZonalStatistics.R</code>, edits the raw output from the "Zonal 
+Statistics" tool for final output. The inputs are defined and the script is 
+executed in R.</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">zonalStatsDirectory</td>
+<td align="left">The path to the parent directory where the attributes tables will be written</td>
+<td align="left">"C:/culverts/zonalStatistics"</td>
+</tr>
+<tr>
+<td align="left">outputName</td>
+<td align="left">The name used to identify the output .RData file</td>
+<td align="left">"deerfield"</td>
+</tr>
+<tr>
+<td align="left">zoneField</td>
+<td align="left">The field identifying the watershed polygons over which stats are calculated</td>
+<td align="left">"XYCroCode"</td>
+</tr>
+<tr>
+<td align="left">rasterList</td>
+<td align="left">The list of rasters to process</td>
+<td align="left">c("slope_pcnt", "ann_prcp_mm", "surfcoarse", "elevation", "lccti.tif")</td>
+</tr>
+<tr>
+<td align="left">statList</td>
+<td align="left">The list of stat names used for proecssing raster. Names are used for column indexing and should match ArcGIS names</td>
+<td align="left">c("STD", "MEAN", "MEAN", "MEAN", "MIN_MAX_MEAN")</td>
+</tr>
+<tr>
+<td align="left">conversionFactor</td>
+<td align="left">The conversion factors from the raw rater value to the final output value</td>
+<td align="left">c(1, 0.0393701, 100, 3.28084, 1, 1, 1)</td>
+</tr>
+<tr>
+<td align="left">newName</td>
+<td align="left">The ouput name for the variables from the raw rasters</td>
+<td align="left">c("slope_pcnt_std", "ann_prcp_in", "surfcoarse", "elevation_ft", "lccti_mean",  "lccti_min", "channelSlope")</td>
+</tr>
+</tbody>
+</table>
+
+<p>Table 5: User-inputs to the finalizeZonalStatistics.R script</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Deerfield Culvert Delineation - MassDOT maintained by <a href="https://github.com/Conte-Ecology">Conte-Ecology</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
