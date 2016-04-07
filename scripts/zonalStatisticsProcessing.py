@@ -8,7 +8,7 @@ from arcpy.sa import *
 # Specify inputs
 # ==============
 # Path to the zonal statistics directory
-baseDirectory = "C:/KPONEIL/massDOTCulvertProject/zonalStatistics"
+zonalStatsDirectory = "C:/KPONEIL/massDOTCulvertProject/zonalStatistics"
 
 # Catchments file path
 catchmentsFilePath =  "C:/KPONEIL/massDOTCulvertProject/spatial/NHDHRDV2/NHDHRDV2.gdb/Layers/Watershed"
@@ -51,7 +51,7 @@ def indexExists(tablename,indexname):
 # Check if folder exists and create it if not
 
 # Output tables
-gisTables_directory = baseDirectory + "/gisTables"
+gisTables_directory = zonalStatsDirectory + "/gisTables"
 if not arcpy.Exists(gisTables_directory): arcpy.CreateFolder_management(baseDirectory, "gisTables")
 
 

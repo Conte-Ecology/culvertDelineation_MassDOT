@@ -1,0 +1,8 @@
+Variable,Description,Example
+zonalStatsDirectory,The path to the parent directory where the attributes tables will be written,"""C:/culverts/zonalStatistics"""
+outputName,The name used to identify the output .RData file,"""deerfield"""
+zoneField,The field identifying the watershed polygons over which stats are calculated,"""XYCroCode"""
+rasterList,The list of rasters to process,"c(""slope_pcnt"", ""ann_prcp_mm"", ""surfcoarse"", ""elevation"", ""lccti.tif"")"
+statList,The list of stat names used for proecssing raster. Names are used for column indexing and should match ArcGIS names,"c(""STD"", ""MEAN"", ""MEAN"", ""MEAN"", ""MIN_MAX_MEAN"")"
+conversionFactor,The conversion factors from the raw rater value to the final output value,"c(1, 0.0393701, 100, 3.28084, 1, 1, 1)"
+newName,The ouput name for the variables from the raw rasters,"c(""slope_pcnt_std"", ""ann_prcp_in"", ""surfcoarse"", ""elevation_ft"", ""lccti_mean"",  ""lccti_min"", ""channelSlope"")"

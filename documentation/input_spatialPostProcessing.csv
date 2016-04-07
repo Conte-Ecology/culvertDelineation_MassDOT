@@ -1,0 +1,4 @@
+Variable,Description,Example
+arcHydroGeodatabase,"The path to the ArcHydro output geodatabase containing the hydrography layers (Watershed, WatershedPoint, and LongestFlowPath)","""C:/culverts/NHDHRDV2.gdb"""
+uniqueID,"The name of the unique ID field used to populate the ""Name"" column in the Batch Point Setup step","""XYCroCode"""
+zonalStatsDirectory,The path to the parent directory where the attributes tables will be written,"""C:/culverts/zonalStatistics"""

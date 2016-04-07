@@ -7,20 +7,19 @@ library(dplyr)
 library(foreign)
 
 
-# ======================
-# Set the Base Directory
-# ======================
-baseDirectory <- 'C:/KPONEIL/massDOTCulvertProject/zonalStatistics'
-
 # ==============
 # Specify Inputs
 # ==============
+# Path to the zonal statistics directory
+zonalStatsDirectory <- 'C:/KPONEIL/massDOTCulvertProject/zonalStatistics'
+
+# Name for output file
 outputName <- "deerfield"
 
-catchmentsFilePath <- "C:/KPONEIL/massDOTCulvertProject/zonalStatistics/gisTables/watershed.dbf"
-
+# Unique ID
 zoneField <- "XYCroCode"
 
+# List of raster names, statistics list, conversion factors, and output names
 rasterList       <- c(    "slope_pcnt", "ann_prcp_mm", "surfcoarse",    "elevation",      "lccti",      "lccti", "longestFlowPath")
 statList         <- c(           "STD",        "MEAN",       "MEAN",         "MEAN",       "MEAN",        "MIN",       "Slp1085FM")
 conversionFactor <- c(               1,     0.0393701,          100,        3.28084,            1,            1,                 1)
@@ -32,7 +31,7 @@ newName          <- c("slope_pcnt_std", "ann_prcp_in", "surfcoarse", "elevation_
 
 # Shapefile
 # -----------
-shapeAreas <- read.dbf(catchmentsFilePath)[,c(zoneField, "AreaSqKM")]
+shapeAreas <- read.dbf(paste0(zonalStatsDirectory, "/gisTables/watershed.dbf"))[,c(zoneField, "AreaSqKM")]
 shapeAreas$AreaSqMI <- shapeAreas$AreaSqKM*0.386102
 shapeAreas$XYCroCode <- as.character(shapeAreas$XYCroCode)
 

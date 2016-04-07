@@ -1,0 +1,7 @@
+Variable,Description,Example
+zonalStatsDirectory,The  path to the parent directory where the attributes tables will be written,"""C:/culverts/zonalStatistics"""
+catchmentsFilePath,"The name of the unique ID field used to populate the ""Name"" column in the Batch Point Setup step","""C:/culverts/NHDHRDV2.gdb/Watershed"""
+zoneField,"The field identifying the watershed polygons over which stats are calculated, typically the same as the uniqueID variable in the ""spatialPostProcessing.py"" script","""XYCroCode"""
+rasterDirectory,The directory path to where the value rasters are located,"""C:/culverts/spatial/rasters"""
+rasterList,The list of rasters to process,"[""slope_pcnt"", ""ann_prcp_mm"", ""surfcoarse"", ""elevation"", ""lccti.tif""]"
+statList,"The list of stats to process for each raster, positions must match the ""rasterList""","[""STD"", ""MEAN"", ""MEAN"", ""MEAN"", ""MIN_MAX_MEAN""]"

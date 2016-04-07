@@ -5,3 +5,5 @@ Flow accumulation grid,Fac01,HRD\V2\gisFiles\NHDH01\arcHydro\Layers
 Stream grid (final),strFinal01,HRD\V2\gisFiles\NHDH01\arcHydro\Layers
 Drainage line (final),DrainageLineFinal01,HRD\V2\gisFiles\NHDH01\arcHydro\vectors.gdb\Layers
 High res flowlines,detailedFlowlines01,HRD\V2\products\hydrography.gdb
+Points layer,crossings_delineation,User-specified
+Digital Elevation Model (optional),dem,HRD\V2\gisFiles\NHDH01\arcHydroInput.gdb
