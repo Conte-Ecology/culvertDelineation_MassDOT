@@ -15,7 +15,7 @@ library(pander)
 #Project name: 
 #   Deerfield Culvert Delineation - MassDOT
 #Tagline: 
-#   Watershed delineation from points using the NHDHRDV2 hydrography layers
+#   Point delineation based on the NHDHRDV2 hydrography layers
 
 
 input_layers <- read.csv("C:/KPONEIL/GitHub/projects/culvertDelineation_MassDOT/documentation/input_layers.csv")
